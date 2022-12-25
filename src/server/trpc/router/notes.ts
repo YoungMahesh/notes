@@ -15,15 +15,26 @@ export const notesRouter = router({
   //   }),
 
   get: protectedProcedure
-    .input(z.object({title: z.string()}))
+    .input(z.object({ title: z.string() }))
     .query(({ input, ctx }) => {
       return ctx.prisma.notes.findFirst({
         where: {
           email: ctx.session.user.email,
           title: input.title,
-        }
-      })
+        },
+      });
     }),
+
+  getAllTitles: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.notes.findMany({
+      where: {
+        email: ctx.session.user.email,
+      },
+      select: {
+        title: true,
+      },
+    });
+  }),
 
   create: protectedProcedure
     .input(
@@ -44,25 +55,39 @@ export const notesRouter = router({
       });
     }),
 
-    update: protectedProcedure
-      .input(
-        z.object({
-          id: z.number(),
-          title: z.string(),
-          content: z.string(),
-          password: z.string(),
-        })
-      )
-      .mutation(({input, ctx}) => {
-        return ctx.prisma.notes.update({
-          where: {
-            id: input.id,
-          },
-          data: {
-            title: input.title,
-            content: input.content,
-            password: input.password,
-          }
-        })
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        title: z.string(),
+        content: z.string(),
+        password: z.string(),
       })
+    )
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.notes.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          title: input.title,
+          content: input.content,
+          password: input.password,
+        },
+      });
+    }),
+
+  delete: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.notes.delete({
+        where: {
+          id: input.id,
+        },
+      });
+    }),
 });

@@ -5,15 +5,15 @@ export default function Layout({
   children,
   title,
 }: {
-  children: any;
+  children: unknown;
   title: string;
 }) {
   return (
-    <>
+    <div className="p-4">
       <Head1 title={title} />
       <Header />
-      {children}
-    </>
+      <>{children}</>
+    </div>
   );
 }
 

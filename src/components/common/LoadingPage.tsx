@@ -1,9 +1,9 @@
 import Layout from "./Layout";
 
 export default function LoadingPage() {
-  return(
-    <Layout title='loading...'>
-      <p className="text-center m-2">Loading...</p>
+  return (
+    <Layout title="loading...">
+      <p className="m-2 text-center">Loading...</p>
     </Layout>
-  )
+  );
 }
