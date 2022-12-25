@@ -1,17 +1,19 @@
 import { signIn, signOut, useSession } from "next-auth/react";
-// import { useRouter } from "next/router";
+import { useRouter } from "next/router";
 import { BuildingLibraryIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import Link from "next/link";
 
 export default function Header() {
   const { data: sessionData, status } = useSession();
-  //   const router = useRouter();
+  const router = useRouter();
 
-  if (status === "loading") return <p className="text-center">Loading...</p>;
+  // if (status === "loading") return <p className="text-center">Loading...</p>;
 
   return (
     <header className="navbar ">
-      <div className="flex-1 px-2 lg:flex-none">
+      <div className="flex-1 px-2 lg:flex-none"
+        onClick={() => router.push('/')}
+      >
         <BuildingLibraryIcon className="h-8 w-8 cursor-pointer text-green-400 sm:h-10 sm:w-10" />
       </div>
       <div className="flex flex-1 justify-end px-2">

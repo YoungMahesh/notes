@@ -42,7 +42,7 @@ model Session {
 model User {
   id            String    @id @default(cuid())
   name          String?
-  email         String?   @unique
+  email         String    @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
@@ -59,11 +59,12 @@ model VerificationToken {
 }
 
 model notes {
-  id          Int     @id @default(autoincrement())
-  userId      String
-  title       String
-  content     String
-  is_ecrypted Boolean @default(false)
-  password    String
-  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id       Int    @id @default(autoincrement())
+  title    String
+  content  String
+  password String
+  email    String
+  User     User   @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "notes_relation_1")
+
+  @@unique([title, email], map: "notes_index_2")
 }
