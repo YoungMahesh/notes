@@ -14,7 +14,7 @@ export default function LoadingPage() {
   }, []);
 
   return (
-    <Layout title="loading...">
+    <Layout title="Notes">
       <p className="m-2 text-center">Loading...</p>
     </Layout>
   );

@@ -34,7 +34,7 @@ export default function EditNote({ title1 }: { title1: string }) {
   if (session.status === "loading") return <LoadingPage />;
   if (!session.data?.user) return <NotSignedPage />;
   if (currNote.isLoading) return <LoadingPage />;
-  if (!currNote.data) return <NotExistPage title={title1} />;
+  if (!currNote.data) return <NotExistPage />;
 
   const updateNote = async () => {
     if (!currNote.data) return;
@@ -67,7 +67,7 @@ export default function EditNote({ title1 }: { title1: string }) {
   };
 
   return (
-    <Layout title="New Note">
+    <Layout title="Edit Note">
       <div className="m-4 flex flex-col">
         <input
           type="text"

@@ -1,8 +1,8 @@
 import Layout from "./Layout";
 
-export default function NotExistPage({ title }: { title: string }) {
+export default function NotExistPage() {
   return (
-    <Layout title={title}>
+    <Layout title="Notes">
       <p className="m-2 text-center">Note Does not Exist</p>
     </Layout>
   );
