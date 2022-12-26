@@ -7,6 +7,8 @@ import LoadingPage from "../../components/common/LoadingPage";
 import NotExistPage from "../../components/common/NotExistPage";
 import NotSignedPage from "../../components/common/NotSignedPage";
 import { useRouter } from "next/router";
+import { loadingAtom } from "../../store/global.store";
+import { useAtom } from "jotai";
 
 export default function EditNote({ title1 }: { title1: string }) {
   const router = useRouter();
@@ -14,11 +16,16 @@ export default function EditNote({ title1 }: { title1: string }) {
   const session = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const currNote = trpc.notes.get.useQuery({ title: title1 });
+  const currNote = trpc.notes.get.useQuery(
+    { title: title1 },
+    { refetchOnWindowFocus: false, refetchInterval: Infinity }
+  );
   const updateN = trpc.notes.update.useMutation();
   const deleteN = trpc.notes.delete.useMutation();
+  const [_, setIsLoading] = useAtom(loadingAtom);
 
   useEffect(() => {
+    if (title.length) return;
     if (!currNote.data) return;
     setTitle(currNote.data.title);
     setContent(currNote.data.content);
@@ -31,6 +38,7 @@ export default function EditNote({ title1 }: { title1: string }) {
 
   const updateNote = async () => {
     if (!currNote.data) return;
+    setIsLoading(true);
     try {
       await updateN.mutateAsync({
         id: currNote.data.id,
@@ -38,13 +46,16 @@ export default function EditNote({ title1 }: { title1: string }) {
         content,
         password: "",
       });
+      router.push(`/edit/${title}`);
     } catch (err) {
       console.log(err);
     }
+    setIsLoading(false);
   };
 
   const deleteNote = async () => {
     if (!currNote.data) return;
+    setIsLoading(true);
     try {
       // use password to delete in future
       await deleteN.mutateAsync({ id: currNote.data.id });
@@ -52,6 +63,7 @@ export default function EditNote({ title1 }: { title1: string }) {
     } catch (err) {
       console.log(err);
     }
+    setIsLoading(false);
   };
 
   return (

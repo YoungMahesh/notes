@@ -9,7 +9,10 @@ import { useRouter } from "next/router";
 
 const Home: NextPage = () => {
   const session = useSession();
-  const allNotes = trpc.notes.getAllTitles.useQuery();
+  const allNotes = trpc.notes.getAllTitles.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+    refetchInterval: Infinity,
+  });
 
   if (session.status === "loading") return <LoadingPage />;
   if (!session.data?.user) return <NotSignedPage />;

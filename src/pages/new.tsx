@@ -5,6 +5,8 @@ import LoadingPage from "../components/common/LoadingPage";
 import NotSignedPage from "../components/common/NotSignedPage";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
+import { useAtom } from "jotai";
+import { loadingAtom } from "../store/global.store";
 
 export default function NewNote() {
   const router = useRouter();
@@ -12,17 +14,20 @@ export default function NewNote() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const createN = trpc.notes.create.useMutation();
+  const [_, setIsLoading] = useAtom(loadingAtom);
 
   if (session.status === "loading") return <LoadingPage />;
   if (!session.data?.user) return <NotSignedPage />;
 
   const createNote = async () => {
+    setIsLoading(true);
     try {
       await createN.mutateAsync({ title, content, password: "" });
       router.push(`/edit/${title}`);
     } catch (err) {
       console.log(err);
     }
+    setIsLoading(false);
   };
 
   return (
