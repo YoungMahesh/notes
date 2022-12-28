@@ -59,12 +59,13 @@ model VerificationToken {
 }
 
 model notes {
-  id       Int    @id @default(autoincrement())
-  title    String
-  content  String
-  password String
-  email    String
-  User     User   @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "notes_relation_1")
+  id         Int       @id @default(autoincrement())
+  title      String    @db.VarChar(255)
+  content    String    @db.VarChar(2000)
+  password   String    @db.VarChar(255)
+  email      String    @db.VarChar(255)
+  updated_at DateTime? @db.Timestamp(6)
+  User       User      @relation(fields: [email], references: [email], onDelete: NoAction, onUpdate: NoAction, map: "notes_relation_1")
 
   @@unique([title, email], map: "notes_index_2")
 }

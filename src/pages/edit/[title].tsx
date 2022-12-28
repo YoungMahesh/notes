@@ -9,6 +9,8 @@ import NotSignedPage from "../../components/common/NotSignedPage";
 import { useRouter } from "next/router";
 import { loadingAtom } from "../../store/global.store";
 import { useAtom } from "jotai";
+import Swal from "sweetalert2";
+
 
 export default function EditNote({ title1 }: { title1: string }) {
   const router = useRouter();
@@ -38,6 +40,7 @@ export default function EditNote({ title1 }: { title1: string }) {
 
   const updateNote = async () => {
     if (!currNote.data) return;
+    if(!title.length) return alert('Title is required')
     setIsLoading(true);
     try {
       await updateN.mutateAsync({
@@ -48,47 +51,61 @@ export default function EditNote({ title1 }: { title1: string }) {
       });
       router.push(`/edit/${title}`);
     } catch (err) {
+      alert('Could not able to update note.')
       console.log(err);
     }
     setIsLoading(false);
   };
 
   const deleteNote = async () => {
-    if (!currNote.data) return;
     setIsLoading(true);
     try {
-      // use password to delete in future
-      await deleteN.mutateAsync({ id: currNote.data.id });
-      router.push(`/`);
+
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      })
+
+      if (result.isConfirmed) {
+        // use password to delete in future
+        if(currNote.data) await deleteN.mutateAsync({ id: currNote.data.id });
+        router.push(`/`);
+      }
     } catch (err) {
+      alert('Could not able to delete note.')
       console.log(err);
     }
     setIsLoading(false);
   };
 
   return (
-    <Layout title="Edit Note">
+    <Layout title={title1}>
       <div className="m-4 flex flex-col">
         <input
           type="text"
           placeholder="Title"
-          className="input-bordered input m-2"
+          className="input-bordered input m-2 text-lg"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
-          className="textarea-bordered textarea m-2"
-          placeholder="Bio"
+          className="textarea-bordered textarea m-2 text-lg"
+          placeholder="Content"
           rows={17}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <div className="m-2 flex justify-end">
-          <button onClick={updateNote} className="btn-primary btn">
-            Save
-          </button>
+        <div className="m-2 flex justify-between">
           <button onClick={deleteNote} className="btn-error btn ml-2">
             Delete
+          </button>
+          <button onClick={updateNote} className="btn-primary btn">
+            Save
           </button>
         </div>
       </div>

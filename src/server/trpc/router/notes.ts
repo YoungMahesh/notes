@@ -33,6 +33,9 @@ export const notesRouter = router({
       select: {
         title: true,
       },
+      orderBy: {
+        updated_at: "desc",
+      }
     });
   }),
 

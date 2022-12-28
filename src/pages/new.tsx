@@ -19,12 +19,16 @@ export default function NewNote() {
   if (session.status === "loading") return <LoadingPage />;
   if (!session.data?.user) return <NotSignedPage />;
 
+
   const createNote = async () => {
+    if(!title.length) return alert('Title is required')
     setIsLoading(true);
     try {
-      await createN.mutateAsync({ title, content, password: "" });
+      const result1 = await createN.mutateAsync({ title, content, password: "" });
+      console.log(result1, 'result1');
       router.push(`/edit/${title}`);
     } catch (err) {
+      alert('Could not able to create note.')
       console.log(err);
     }
     setIsLoading(false);
@@ -33,6 +37,7 @@ export default function NewNote() {
   return (
     <Layout title="New Note">
       <div className="m-4 flex flex-col">
+
         <input
           type="text"
           placeholder="Title"
