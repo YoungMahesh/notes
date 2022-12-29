@@ -10,6 +10,8 @@ import { useRouter } from "next/router";
 import { loadingAtom } from "../../store/global.store";
 import { useAtom } from "jotai";
 import Swal from "sweetalert2";
+import { DocumentDuplicateIcon } from '@heroicons/react/24/solid'
+import copy from 'copy-to-clipboard';
 
 
 export default function EditNote({ title1 }: { title1: string }) {
@@ -27,8 +29,7 @@ export default function EditNote({ title1 }: { title1: string }) {
   const [_, setIsLoading] = useAtom(loadingAtom);
 
   useEffect(() => {
-    if (title.length) return;
-    if (!currNote.data) return;
+    if ((title.length) || (!currNote.data)) return;
     setTitle(currNote.data.title);
     setContent(currNote.data.content);
   }, [currNote]);
@@ -40,7 +41,7 @@ export default function EditNote({ title1 }: { title1: string }) {
 
   const updateNote = async () => {
     if (!currNote.data) return;
-    if(!title.length) return alert('Title is required')
+    if (!title.length) return alert('Title is required')
     setIsLoading(true);
     try {
       await updateN.mutateAsync({
@@ -56,6 +57,11 @@ export default function EditNote({ title1 }: { title1: string }) {
     }
     setIsLoading(false);
   };
+
+  const copyContent = () => {
+    copy(content)
+    alert('Copied')
+  }
 
   const deleteNote = async () => {
     setIsLoading(true);
@@ -73,7 +79,7 @@ export default function EditNote({ title1 }: { title1: string }) {
 
       if (result.isConfirmed) {
         // use password to delete in future
-        if(currNote.data) await deleteN.mutateAsync({ id: currNote.data.id });
+        if (currNote.data) await deleteN.mutateAsync({ id: currNote.data.id });
         router.push(`/`);
       }
     } catch (err) {
@@ -104,9 +110,12 @@ export default function EditNote({ title1 }: { title1: string }) {
           <button onClick={deleteNote} className="btn-error btn ml-2">
             Delete
           </button>
-          <button onClick={updateNote} className="btn-primary btn">
-            Save
-          </button>
+          <div className="flex items-center">
+            <DocumentDuplicateIcon className="w-8 h-8 mr-2 cursor-pointer" onClick={copyContent} />
+            <button onClick={updateNote} className="btn-primary btn">
+              Save
+            </button>
+          </div>
         </div>
       </div>
     </Layout>
