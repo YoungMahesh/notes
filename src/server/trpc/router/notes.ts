@@ -25,19 +25,32 @@ export const notesRouter = router({
       });
     }),
 
-  getAllTitles: protectedProcedure.query(({ ctx }) => {
-    return ctx.prisma.notes.findMany({
+  getPagesCount: protectedProcedure.query(async ({ ctx }) => {
+    const noOfNotes = await ctx.prisma.notes.count({
       where: {
         email: ctx.session.user.email,
       },
-      select: {
-        title: true,
-      },
-      orderBy: {
-        updated_at: "desc",
-      }
     });
+    return Math.ceil(noOfNotes / 10);
   }),
+
+  getAllTitles: protectedProcedure
+    .input(z.object({ page: z.number() }))
+    .query(({ input, ctx }) => {
+      return ctx.prisma.notes.findMany({
+        where: {
+          email: ctx.session.user.email,
+        },
+        select: {
+          title: true,
+        },
+        orderBy: {
+          updated_at: "desc",
+        },
+        take: 10,
+        skip: 10 * (input.page - 1),
+      });
+    }),
 
   create: protectedProcedure
     .input(

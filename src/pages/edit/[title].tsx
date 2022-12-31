@@ -10,9 +10,8 @@ import { useRouter } from "next/router";
 import { loadingAtom } from "../../store/global.store";
 import { useAtom } from "jotai";
 import Swal from "sweetalert2";
-import { DocumentDuplicateIcon } from '@heroicons/react/24/solid'
-import copy from 'copy-to-clipboard';
-
+import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
+import copy from "copy-to-clipboard";
 
 export default function EditNote({ title1 }: { title1: string }) {
   const router = useRouter();
@@ -29,7 +28,7 @@ export default function EditNote({ title1 }: { title1: string }) {
   const [_, setIsLoading] = useAtom(loadingAtom);
 
   useEffect(() => {
-    if ((title.length) || (!currNote.data)) return;
+    if (title.length || !currNote.data) return;
     setTitle(currNote.data.title);
     setContent(currNote.data.content);
   }, [currNote]);
@@ -41,7 +40,7 @@ export default function EditNote({ title1 }: { title1: string }) {
 
   const updateNote = async () => {
     if (!currNote.data) return;
-    if (!title.length) return alert('Title is required')
+    if (!title.length) return alert("Title is required");
     setIsLoading(true);
     try {
       await updateN.mutateAsync({
@@ -52,30 +51,29 @@ export default function EditNote({ title1 }: { title1: string }) {
       });
       router.push(`/edit/${title}`);
     } catch (err) {
-      alert('Could not able to update note.')
+      alert("Could not able to update note.");
       console.log(err);
     }
     setIsLoading(false);
   };
 
   const copyContent = () => {
-    copy(content)
-    alert('Copied')
-  }
+    copy(content);
+    alert("Copied");
+  };
 
   const deleteNote = async () => {
     setIsLoading(true);
     try {
-
       const result = await Swal.fire({
-        title: 'Are you sure?',
+        title: "Are you sure?",
         text: "You won't be able to revert this!",
-        icon: 'warning',
+        icon: "warning",
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-      })
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, delete it!",
+      });
 
       if (result.isConfirmed) {
         // use password to delete in future
@@ -83,7 +81,7 @@ export default function EditNote({ title1 }: { title1: string }) {
         router.push(`/`);
       }
     } catch (err) {
-      alert('Could not able to delete note.')
+      alert("Could not able to delete note.");
       console.log(err);
     }
     setIsLoading(false);
@@ -111,7 +109,10 @@ export default function EditNote({ title1 }: { title1: string }) {
             Delete
           </button>
           <div className="flex items-center">
-            <DocumentDuplicateIcon className="w-8 h-8 mr-2 cursor-pointer" onClick={copyContent} />
+            <DocumentDuplicateIcon
+              className="mr-2 h-8 w-8 cursor-pointer"
+              onClick={copyContent}
+            />
             <button onClick={updateNote} className="btn-primary btn">
               Save
             </button>
