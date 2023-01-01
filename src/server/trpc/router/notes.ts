@@ -42,11 +42,11 @@ export const notesRouter = router({
           email: ctx.session.user.email,
         },
         select: {
+          id: true,
           title: true,
+          is_pinned: true,
         },
-        orderBy: {
-          updated_at: "desc",
-        },
+        orderBy: [{ is_pinned: "desc" }, { updated_at: "desc" }],
         take: 10,
         skip: 10 * (input.page - 1),
       });
@@ -57,7 +57,6 @@ export const notesRouter = router({
       z.object({
         title: z.string(),
         content: z.string(),
-        password: z.string(),
       })
     )
     .mutation(({ input, ctx }) => {
@@ -66,7 +65,6 @@ export const notesRouter = router({
           email: ctx.session.user.email,
           title: input.title,
           content: input.content,
-          password: input.password,
         },
       });
     }),
@@ -77,7 +75,6 @@ export const notesRouter = router({
         id: z.number(),
         title: z.string(),
         content: z.string(),
-        password: z.string(),
       })
     )
     .mutation(({ input, ctx }) => {
@@ -88,7 +85,25 @@ export const notesRouter = router({
         data: {
           title: input.title,
           content: input.content,
-          password: input.password,
+          is_encrypted: false,
+        },
+      });
+    }),
+
+  updatePin: protectedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        isPinned: z.boolean(),
+      })
+    )
+    .mutation(({ input, ctx }) => {
+      return ctx.prisma.notes.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          is_pinned: input.isPinned,
         },
       });
     }),

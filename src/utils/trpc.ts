@@ -25,6 +25,17 @@ export const trpc = createTRPCNext<AppRouter>({
           url: `${getBaseUrl()}/api/trpc`,
         }),
       ],
+      queryClientConfig: {
+        defaultOptions: {
+          queries: {
+            // retry: false,
+            // refetchOnMount: false,
+            refetchOnWindowFocus: false,
+            staleTime: Infinity,
+            refetchInterval: Infinity,
+          },
+        },
+      },
     };
   },
   ssr: false,

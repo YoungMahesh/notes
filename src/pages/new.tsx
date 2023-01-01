@@ -6,13 +6,14 @@ import NotSignedPage from "../components/common/NotSignedPage";
 import { trpc } from "../utils/trpc";
 import { useRouter } from "next/router";
 import { useAtom } from "jotai";
-import { loadingAtom } from "../store/global.store";
+import { loadingAtom, notesListUpdatedAtom } from "../store/global.store";
 
 export default function NewNote() {
   const router = useRouter();
   const session = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [_isNewC, setIsNewCreated] = useAtom(notesListUpdatedAtom);
   const createN = trpc.notes.create.useMutation();
   const [_, setIsLoading] = useAtom(loadingAtom);
 
@@ -23,12 +24,11 @@ export default function NewNote() {
     if (!title.length) return alert("Title is required");
     setIsLoading(true);
     try {
-      const result1 = await createN.mutateAsync({
+      await createN.mutateAsync({
         title,
         content,
-        password: "",
       });
-      console.log(result1, "result1");
+      setIsNewCreated(true);
       router.push(`/edit/${title}`);
     } catch (err) {
       alert("Could not able to create note.");
@@ -49,12 +49,12 @@ export default function NewNote() {
         />
         <textarea
           className="textarea-bordered textarea m-2"
-          placeholder="Bio"
+          placeholder="Content"
           rows={17}
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <div className="m-2 flex justify-end">
+        <div className="m-2 flex items-center justify-end">
           <button onClick={createNote} className="btn btn-primary">
             Save
           </button>

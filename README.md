@@ -1,7 +1,5 @@
-### Issues Found
-- Cannot change title currently
-
 ### Roadmap
+- Pin notes
 - Tags for filter
 - Encryption
-- Pin notes
+

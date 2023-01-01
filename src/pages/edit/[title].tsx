@@ -7,7 +7,7 @@ import LoadingPage from "../../components/common/LoadingPage";
 import NotExistPage from "../../components/common/NotExistPage";
 import NotSignedPage from "../../components/common/NotSignedPage";
 import { useRouter } from "next/router";
-import { loadingAtom } from "../../store/global.store";
+import { loadingAtom, notesListUpdatedAtom } from "../../store/global.store";
 import { useAtom } from "jotai";
 import Swal from "sweetalert2";
 import { DocumentDuplicateIcon } from "@heroicons/react/24/solid";
@@ -19,10 +19,9 @@ export default function EditNote({ title1 }: { title1: string }) {
   const session = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const currNote = trpc.notes.get.useQuery(
-    { title: title1 },
-    { refetchOnWindowFocus: false, refetchInterval: Infinity }
-  );
+  const [_u, setIsUpdated] = useAtom(notesListUpdatedAtom);
+
+  const currNote = trpc.notes.get.useQuery({ title: title1 });
   const updateN = trpc.notes.update.useMutation();
   const deleteN = trpc.notes.delete.useMutation();
   const [_, setIsLoading] = useAtom(loadingAtom);
@@ -47,8 +46,8 @@ export default function EditNote({ title1 }: { title1: string }) {
         id: currNote.data.id,
         title,
         content,
-        password: "",
       });
+      setIsUpdated(true);
       router.push(`/edit/${title}`);
     } catch (err) {
       alert("Could not able to update note.");
@@ -78,6 +77,7 @@ export default function EditNote({ title1 }: { title1: string }) {
       if (result.isConfirmed) {
         // use password to delete in future
         if (currNote.data) await deleteN.mutateAsync({ id: currNote.data.id });
+        setIsUpdated(true);
         router.push(`/`);
       }
     } catch (err) {
