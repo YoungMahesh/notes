@@ -35,9 +35,14 @@ export default function Header() {
                 </a>
               </li>
               {sessionData ? (
-                <li onClick={() => signOut()}>
-                  <a>Sign out</a>
-                </li>
+                <>
+                  <li>
+                    <Link href="/settings">Settings</Link>
+                  </li>
+                  <li onClick={() => signOut()}>
+                    <a>Sign out</a>
+                  </li>
+                </>
               ) : (
                 <li onClick={() => signIn()}>
                   <a>Sign In</a>

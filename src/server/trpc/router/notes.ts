@@ -25,6 +25,14 @@ export const notesRouter = router({
       });
     }),
 
+  getAll: protectedProcedure.query(({ ctx }) => {
+    return ctx.prisma.notes.findMany({
+      where: {
+        email: ctx.session.user.email,
+      },
+    });
+  }),
+
   getPagesCount: protectedProcedure.query(async ({ ctx }) => {
     const noOfNotes = await ctx.prisma.notes.count({
       where: {
