@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Layout from "../../components/common/Layout";
@@ -19,12 +20,12 @@ export default function EditNote({ title1 }: { title1: string }) {
   const session = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [_u, setIsUpdated] = useAtom(notesListUpdatedAtom);
+  const listUpdateS = useAtom(notesListUpdatedAtom);
 
   const currNote = trpc.notes.get.useQuery({ title: title1 });
   const updateN = trpc.notes.update.useMutation();
   const deleteN = trpc.notes.delete.useMutation();
-  const [_, setIsLoading] = useAtom(loadingAtom);
+  const loadingS = useAtom(loadingAtom);
 
   useEffect(() => {
     if (title.length || !currNote.data) return;
@@ -40,20 +41,20 @@ export default function EditNote({ title1 }: { title1: string }) {
   const updateNote = async () => {
     if (!currNote.data) return;
     if (!title.length) return alert("Title is required");
-    setIsLoading(true);
+    loadingS[1](true);
     try {
       await updateN.mutateAsync({
         id: currNote.data.id,
         title,
         content,
       });
-      setIsUpdated(true);
+      listUpdateS[1](true);
       router.push(`/edit/${title}`);
     } catch (err) {
       alert("Could not able to update note.");
       console.log(err);
     }
-    setIsLoading(false);
+    loadingS[1](false);
   };
 
   const copyContent = () => {
@@ -62,7 +63,7 @@ export default function EditNote({ title1 }: { title1: string }) {
   };
 
   const deleteNote = async () => {
-    setIsLoading(true);
+    loadingS[1](true);
     try {
       const result = await Swal.fire({
         title: "Are you sure?",
@@ -77,14 +78,14 @@ export default function EditNote({ title1 }: { title1: string }) {
       if (result.isConfirmed) {
         // use password to delete in future
         if (currNote.data) await deleteN.mutateAsync({ id: currNote.data.id });
-        setIsUpdated(true);
+        listUpdateS[1](true);
         router.push(`/`);
       }
     } catch (err) {
       alert("Could not able to delete note.");
       console.log(err);
     }
-    setIsLoading(false);
+    loadingS[1](false);
   };
 
   return (
@@ -93,7 +94,7 @@ export default function EditNote({ title1 }: { title1: string }) {
         <input
           type="text"
           placeholder="Title"
-          className="input-bordered input m-2 text-lg"
+          className="input-bordered input m-2 text-lg font-bold"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
@@ -124,10 +125,6 @@ export default function EditNote({ title1 }: { title1: string }) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  // const res = await fetch('https://.../data')
-  // const data: Data = await res.json()
-  console.log("context", context.query);
-
   return {
     props: {
       title1: context.query.title,

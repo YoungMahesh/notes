@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Layout from "../components/common/Layout";

@@ -13,28 +13,28 @@ export default function NewNote() {
   const session = useSession();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [_isNewC, setIsNewCreated] = useAtom(notesListUpdatedAtom);
+  const listUpdateS = useAtom(notesListUpdatedAtom);
   const createN = trpc.notes.create.useMutation();
-  const [_, setIsLoading] = useAtom(loadingAtom);
+  const loadingState = useAtom(loadingAtom);
 
   if (session.status === "loading") return <LoadingPage />;
   if (!session.data?.user) return <NotSignedPage />;
 
   const createNote = async () => {
     if (!title.length) return alert("Title is required");
-    setIsLoading(true);
+    loadingState[1](true);
     try {
       await createN.mutateAsync({
         title,
         content,
       });
-      setIsNewCreated(true);
+      listUpdateS[1](true);
       router.push(`/edit/${title}`);
     } catch (err) {
       alert("Could not able to create note.");
       console.log(err);
     }
-    setIsLoading(false);
+    loadingState[1](false);
   };
 
   return (
@@ -43,12 +43,12 @@ export default function NewNote() {
         <input
           type="text"
           placeholder="Title"
-          className="input-bordered input m-2"
+          className="input-bordered input m-2 text-lg font-bold"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
-          className="textarea-bordered textarea m-2"
+          className="textarea-bordered textarea m-2 text-lg"
           placeholder="Content"
           rows={17}
           value={content}

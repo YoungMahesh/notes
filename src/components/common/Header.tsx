@@ -1,11 +1,18 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import { BuildingLibraryIcon, Bars3Icon } from "@heroicons/react/24/solid";
+import {
+  BuildingLibraryIcon,
+  Bars3Icon,
+  MoonIcon,
+  SunIcon,
+} from "@heroicons/react/24/solid";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 
 export default function Header() {
   const { data: sessionData } = useSession();
   const router = useRouter();
+  const { theme, setTheme } = useTheme();
 
   return (
     <header className="mb-2 flex items-center">
@@ -13,7 +20,24 @@ export default function Header() {
         <BuildingLibraryIcon className="h-8 w-8 cursor-pointer text-green-400 sm:h-10 sm:w-10" />
       </div>
       <div className="flex flex-1 justify-end">
-        <div className="flex items-stretch">
+        <div className="flex items-center">
+          <>
+            {theme === "business" ? (
+              <div
+                className="flex-1 lg:flex-none"
+                onClick={() => setTheme("emerald")}
+              >
+                <SunIcon className="h-8 w-8 cursor-pointer text-green-400 sm:h-10 sm:w-10" />
+              </div>
+            ) : (
+              <div
+                className="flex-1 lg:flex-none"
+                onClick={() => setTheme("business")}
+              >
+                <MoonIcon className="h-8 w-8 cursor-pointer text-green-400 sm:h-8 sm:w-8" />
+              </div>
+            )}
+          </>
           <div className="dropdown-end dropdown">
             <label tabIndex={0} className="btn-ghost rounded-btn btn">
               <Bars3Icon className="h-8 w-8 cursor-pointer text-green-400 sm:h-10 sm:w-10" />
