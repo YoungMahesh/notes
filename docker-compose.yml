@@ -1,0 +1,39 @@
+version: "3.7"
+
+services:
+  notes_postgresql:
+    image: postgres:15.3
+    container_name: notes_postgresql
+    restart: always
+    volumes:
+      - notes_pgdata:/var/lib/postgresql/data
+    env_file:
+      - .env.postgres
+    networks:
+      - traefik_default
+
+  notes_nextjs:
+    container_name: notes_nextjs
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      - notes_postgresql
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.notes.rule=Host(`notes.mogali.in`)"
+      - "traefik.http.routers.notes.entrypoints=websecure"
+      - "traefik.http.routers.notes.service=notes"
+      - "traefik.http.services.notes.loadbalancer.server.port=3000"
+      - "traefik.http.routers.notes.tls.certresolver=leresolver"
+    networks:
+      - traefik_default
+
+volumes:
+  notes_pgdata:
+    external: true
+
+networks:
+  traefik_default:
+    external: true
